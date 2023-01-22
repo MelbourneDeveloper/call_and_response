@@ -9,7 +9,7 @@ import '../lib/call_and_response.dart';
 import '../bin/user.dart';
 
 void main() {
-  test('GET User - In Process - User', () async {
+  test('GET - In Process - User', () async {
     final server = await (Router()
           ..addGet(
             '/user/<login>',
