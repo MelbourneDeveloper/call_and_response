@@ -1,40 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:example/fake_server.dart';
 import 'package:flutter/material.dart';
-import 'package:shelf_router/shelf_router.dart' as router;
 import 'package:http/http.dart';
-import 'package:call_and_response/call_and_response.dart';
-
-class CounterServerState {
-  CounterServerState();
-  int count = 0;
-  Map<String, dynamic> toJson() => {"count": count};
-  factory CounterServerState.fromJson(Map<String, dynamic> json) =>
-      CounterServerState()..count = json["count"] as int;
-}
-
-late final HttpServer server;
-CounterServerState counter = CounterServerState();
 
 Future main() async {
-  server = await (router.Router()
-        ..addGet(
-          //TODO: Remove nothing
-          '/count/<nothing>',
-          (r, arg) async {
-            counter.count++;
-            return counter;
-          },
-          (state) => state.toJson(),
-        ))
-      .toServer(8087);
+  Uri baseUri = await fakeServer();
 
-  runApp(const MyApp());
+  runApp(MyApp(baseUri: baseUri));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({
+    required this.baseUri,
+    super.key,
+  });
+
+  final Uri baseUri;
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +25,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(
+        title: 'Flutter Demo Home Page',
+        baseUri: baseUri,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.baseUri,
+  });
 
   final String title;
+  final Uri baseUri;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -89,8 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
               count = null;
             });
 
-            final response = await get(Uri.parse(
-                'http://${server.address.host}:${server.port}/count/0'));
+            final response =
+                await get(widget.baseUri.replace(pathSegments: ['count', '0']));
 
             final state =
                 CounterServerState.fromJson(jsonDecode(response.body));
