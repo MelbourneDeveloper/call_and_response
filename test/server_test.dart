@@ -9,14 +9,14 @@ import '../bin/fake_server.dart';
 import '../bin/user.dart';
 
 void main() {
-  test('Test Get User In Test Process', () async {
+  test('Test GET User In Test Process', () async {
     final server = await (Router()
           ..addGet(
             '/user/<login>',
             (r, arg) => User(login: arg, id: "123"),
             (u) => u.toJson(),
           ))
-        .toServer();
+        .toServer(8083);
 
     final response = await get(
         Uri.parse('http://${server.address.host}:${server.port}/user/jim'));
@@ -25,8 +25,8 @@ void main() {
     await server.close(force: true);
   });
 
-  test('Test Get App Out of Test Process', () async {
-    final port = '8080';
+  test('Test GET App Out of Test Process', () async {
+    final port = '8085';
     final host = 'http://0.0.0.0:$port';
     late Process p;
 
@@ -52,9 +52,23 @@ void main() {
     await server.close(force: true);
   });
 
-  // test('App', () async {
-  //   final response = await post(Uri.parse('$host/saveapp/543'), body: 'asd');
-  //   expect(response.statusCode, 200);
-  //   expect(response.body, jsonEncode(App(name: "Bigapp", id: "543").toJson()));
-  // });
+  test('Test POST User In Process', () async {
+    var user = User(login: 'bob', id: "123");
+    final server = await (Router()
+          ..addPost(
+            '/adduser/<login>',
+            (r, arg) async {
+              return user;
+            },
+            (u) => u.toJson(),
+          ))
+        .toServer(8082);
+
+    final response = await post(
+        Uri.parse('http://${server.address.host}:${server.port}/adduser/jim'),
+        body: user.toJson());
+    expect(response.statusCode, 200);
+    expect(response.body, jsonEncode(user.toJson()));
+    await server.close(force: true);
+  });
 }

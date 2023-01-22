@@ -27,21 +27,21 @@ extension RouterExtensions on Router {
 
   void addPost<T>(
     String route,
-    T Function(Request request, dynamic args) body,
+    Future<T> Function(Request request, dynamic args) body,
     Map<String, dynamic> Function(T) toJson,
   ) =>
       post(
           route,
-          (request, args) => _handle(
+          (request, args) async => await _handle<T>(
                 request,
-                body(request, args),
+                await body(request, args),
                 toJson,
               ));
 
-  Response _handle<T>(
+  Future<Response> _handle<T>(
     Request request,
     T body,
     Map<String, dynamic> Function(T) toJson,
-  ) =>
+  ) async =>
       Response.ok(jsonEncode(toJson(body)));
 }
