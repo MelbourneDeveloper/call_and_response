@@ -5,11 +5,11 @@ import 'package:http/http.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:test/test.dart';
 
-import '../bin/fake_server.dart';
+import '../lib/call_and_response.dart';
 import '../bin/user.dart';
 
 void main() {
-  test('Test GET User In Test Process', () async {
+  test('GET User - In Process - User', () async {
     final server = await (Router()
           ..addGet(
             '/user/<login>',
@@ -23,11 +23,11 @@ void main() {
 
     expect(response.statusCode, 200);
     expect(response.body, jsonEncode(User(login: "jim", id: "123").toJson()));
-    
+
     await server.close(force: true);
   });
 
-  test('Test GET App Out of Test Process', () async {
+  test('GET - Out of Test Process - App', () async {
     final port = '8085';
     final host = 'http://0.0.0.0:$port';
     late Process p;
@@ -46,7 +46,7 @@ void main() {
     p.kill();
   });
 
-  test('Test 404 In Process', () async {
+  test('GET - In Process - 404', () async {
     final server = await Router().toServer(8081);
     var uri = 'http://${server.address.host}:${server.port}/foobar';
     final response = await get(Uri.parse(uri));
@@ -54,7 +54,7 @@ void main() {
     await server.close(force: true);
   });
 
-  test('Test POST User In Process', () async {
+  test('POST - In Process - User', () async {
     var user = User(login: 'bob', id: "123");
     final server = await (Router()
           ..addPost(
