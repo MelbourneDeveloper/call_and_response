@@ -53,19 +53,22 @@ void main() {
   });
 
   test('Test POST User In Process', () async {
+    var user = User(login: 'bob', id: "123");
     final server = await (Router()
           ..addPost(
-            '/user/<login>',
-            (r, arg) => User(login: arg, id: "123"),
+            '/adduser/<login>',
+            (r, arg) async {
+              return user;
+            },
             (u) => u.toJson(),
           ))
-        .toServer();
+        .toServer(8082);
 
     final response = await post(
-      Uri.parse('http://${server.address.host}:${server.port}/user/jim'),
-    );
+        Uri.parse('http://${server.address.host}:${server.port}/adduser/jim'),
+        body: user.toJson());
     expect(response.statusCode, 200);
-    expect(response.body, jsonEncode(User(login: "jim", id: "123").toJson()));
+    expect(response.body, jsonEncode(user.toJson()));
     await server.close(force: true);
   });
 }

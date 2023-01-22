@@ -32,9 +32,9 @@ extension RouterExtensions on Router {
   ) =>
       post(
           route,
-          (request, args) async => await _handle(
+          (request, args) async => await _handle<T>(
                 request,
-                body(request, args),
+                await body(request, args),
                 toJson,
               ));
 
