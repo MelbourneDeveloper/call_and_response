@@ -28,7 +28,7 @@ Future main() async {
           },
           (state) => state.toJson(),
         ))
-      .toServer(8086);
+      .toServer(8087);
 
   runApp(const MyApp());
 }
