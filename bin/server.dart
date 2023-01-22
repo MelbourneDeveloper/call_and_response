@@ -10,16 +10,16 @@ void main(List<String> args) async {
           (r, arg) => User(login: arg, id: "123"),
           (u) => u.toJson(),
         )
-        ..addGet(
-          '/app/<id>',
-          (r, id) => App(name: 'Bigapp', id: id),
-          (u) => u.toJson(),
-        )
-      // ..addPost(
-      //   '/saveapp/<id>',
-      //   (r, id) => App(name: 'Bigapp', id: id, binary: r.read),
-      //   (u) => u.toJson(),
-      // )
+        // ..addGet(
+        //   '/app/<id>',
+        //   (r, id) => App(name: 'Bigapp', id: id),
+        //   (u) => u.toJson(),
+        // )
+      ..addPost(
+        '/saveapp/<id>',
+        (r, id) => App(name: 'Bigapp', id: id, binary: r.read),
+        (u) => u.toJson(),
+      )
       )
       .toServer();
 
