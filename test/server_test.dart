@@ -26,7 +26,7 @@ void main() {
   });
 
   test('Test GET App Out of Test Process', () async {
-    final port = '8080';
+    final port = '8085';
     final host = 'http://0.0.0.0:$port';
     late Process p;
 
