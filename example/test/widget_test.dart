@@ -6,7 +6,7 @@ import 'package:example/main.dart';
 //This is a Widget test that spins up our fake server and then runs our app
 //that makes actual HTTP calls to the server. This test does not work as a normal
 //widget test because it uses the network. We need to run this as an integration
-//test.
+//test. Run the integration test version - not the widget test.
 
 //I was hoping that we could pass an actual HttpClient into the test via HttpOverrides.runZoned
 //But, it seems that if you pass an actual HttpClient in via createHttpClient
