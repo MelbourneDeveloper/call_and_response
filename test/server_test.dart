@@ -20,8 +20,10 @@ void main() {
 
     final response = await get(
         Uri.parse('http://${server.address.host}:${server.port}/user/jim'));
+
     expect(response.statusCode, 200);
     expect(response.body, jsonEncode(User(login: "jim", id: "123").toJson()));
+    
     await server.close(force: true);
   });
 
