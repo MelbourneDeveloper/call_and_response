@@ -16,7 +16,7 @@ void main() {
             (r, arg) => User(login: arg, id: "123"),
             (u) => u.toJson(),
           ))
-        .toServer();
+        .toServer(8083);
 
     final response = await get(
         Uri.parse('http://${server.address.host}:${server.port}/user/jim'));
