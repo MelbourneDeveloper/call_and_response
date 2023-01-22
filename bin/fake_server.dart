@@ -6,10 +6,9 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 extension RouterExtensions on Router {
-  Future<HttpServer> toServer() {
+  Future<HttpServer> toServer([int port = 8080]) {
     final ip = InternetAddress.anyIPv4;
     final handler = Pipeline().addMiddleware(logRequests()).addHandler(this);
-    final port = int.parse(Platform.environment['PORT'] ?? '8080');
     return serve(handler, ip, port);
   }
 
