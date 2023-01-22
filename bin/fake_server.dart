@@ -14,14 +14,14 @@ extension RouterExtensions on Router {
 
   void addGet<T>(
     String route,
-    T Function(Request request, dynamic args) body,
+    Future<T> Function(Request request, dynamic args) body,
     Map<String, dynamic> Function(T) toJson,
   ) =>
       get(
           route,
-          (request, login) => _handle(
+          (request, login) async => await _handle<T>(
                 request,
-                body(request, login),
+                await body(request, login),
                 toJson,
               ));
 

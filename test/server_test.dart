@@ -13,7 +13,7 @@ void main() {
     final server = await (Router()
           ..addGet(
             '/user/<login>',
-            (r, arg) => User(login: arg, id: "123"),
+            (r, arg) async => User(login: arg, id: "123"),
             (u) => u.toJson(),
           ))
         .toServer(8083);

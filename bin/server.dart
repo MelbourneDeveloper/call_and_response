@@ -9,7 +9,7 @@ void main(List<String> args) async {
   final server = await (Router()
         ..addGet(
           '/app/<id>',
-          (r, id) => App(name: 'Bigapp', id: id),
+          (r, id) async => App(name: 'Bigapp', id: id),
           (u) => u.toJson(),
         ))
       .toServer(int.parse(Platform.environment['PORT']!));
