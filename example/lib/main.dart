@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:shelf_router/shelf_router.dart' as router;
-
+import 'package:http/http.dart';
 import 'package:call_and_response/call_and_response.dart';
 
 class CounterServerState {
@@ -20,14 +20,15 @@ CounterServerState counter = CounterServerState();
 Future main() async {
   server = await (router.Router()
         ..addGet(
-          '/count',
+          //TODO: Remove nothing
+          '/count/<nothing>',
           (r, arg) async {
             counter.count++;
             return counter;
           },
           (state) => state.toJson(),
         ))
-      .toServer(8080);
+      .toServer(8086);
 
   runApp(const MyApp());
 }
@@ -88,14 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
               count = null;
             });
 
-            final request = await client.get(
-              server.address.address,
-              server.port,
-              'count',
-            );
-            final response = await request.close();
-            final stringData = await response.transform(utf8.decoder).join();
-            final state = CounterServerState.fromJson(jsonDecode(stringData));
+            final response = await get(Uri.parse(
+                'http://${server.address.host}:${server.port}/count/0'));
+
+            final state =
+                CounterServerState.fromJson(jsonDecode(response.body));
+
             setState(() {
               count = state.count;
             });
