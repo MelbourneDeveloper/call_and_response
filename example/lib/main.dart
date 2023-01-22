@@ -1,6 +1,34 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:io';
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:shelf_router/shelf_router.dart' as router;
+
+import 'package:call_and_response/call_and_response.dart';
+
+class CounterServerState {
+  CounterServerState();
+  int count = 0;
+  Map<String, dynamic> toJson() => {"count": count};
+  factory CounterServerState.fromJson(Map<String, dynamic> json) =>
+      CounterServerState()..count = json["count"] as int;
+}
+
+late final HttpServer server;
+CounterServerState counter = CounterServerState();
+
+Future main() async {
+  server = await (router.Router()
+        ..addGet(
+          '/count',
+          (r, arg) async {
+            counter.count++;
+            return counter;
+          },
+          (state) => state.toJson(),
+        ))
+      .toServer(8080);
+
   runApp(const MyApp());
 }
 
@@ -29,13 +57,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final client = HttpClient();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  int? count = 0;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -47,17 +71,35 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Text(
-                'You have pushed the button this many times:',
+                'You have called the API this many times:',
               ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
+              count == null
+                  ? const CircularProgressIndicator.adaptive()
+                  : Text(
+                      count!.toString(),
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
+          onPressed: () async {
+            setState(() {
+              count = null;
+            });
+
+            final request = await client.get(
+              server.address.address,
+              server.port,
+              'count',
+            );
+            final response = await request.close();
+            final stringData = await response.transform(utf8.decoder).join();
+            final state = CounterServerState.fromJson(jsonDecode(stringData));
+            setState(() {
+              count = state.count;
+            });
+          },
           tooltip: 'Increment',
           child: const Icon(Icons.add),
         ),
