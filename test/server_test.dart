@@ -73,4 +73,26 @@ void main() {
     expect(response.body, jsonEncode(user.toJson()));
     await server.close(force: true);
   });
+
+  test('PUT - In Process - User', () async {
+    final Map<String, dynamic> responseBody = {'message': 'success'};
+
+    final server = await (Router()
+          ..addPut(
+            '/updateuser/<login>',
+            (r, arg) async => true,
+            (success) => success ? responseBody : {},
+          ))
+        .toServer(8083);
+
+    final response = await put(
+        Uri.parse(
+            'http://${server.address.host}:${server.port}/updateuser/jim'),
+        body: User(login: 'jim', id: "123").toJson());
+
+    expect(response.statusCode, 200);
+    expect(response.body, jsonEncode(responseBody));
+
+    await server.close(force: true);
+  });
 }
