@@ -102,7 +102,8 @@ void main() {
     final server = await (Router()
           ..addDelete(
             '/updateuser/<login>',
-            (r, arg) async => arg == 'jim',
+            (r, arg) async =>
+                arg == 'jim' && r.headers['a'] == 'a',
             (success) => success ? responseBody : {},
           ))
         .toServer(8083);
@@ -110,7 +111,8 @@ void main() {
     final response = await delete(
         Uri.parse(
             'http://${server.address.host}:${server.port}/updateuser/jim'),
-        body: User(login: 'jim', id: "123").toJson());
+        body: User(login: 'jim', id: "123").toJson(),
+        headers: {'a': 'a'});
 
     expect(response.statusCode, 200);
     expect(response.body, jsonEncode(responseBody));
