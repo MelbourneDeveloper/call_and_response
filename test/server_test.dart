@@ -95,4 +95,45 @@ void main() {
 
     await server.close(force: true);
   });
+
+  test('DELETE - In Process', () async {
+    final Map<String, dynamic> responseBody = {'message': 'success'};
+
+    final server = await (Router()
+          ..addDelete(
+            '/updateuser/<login>',
+            (r, arg) async => arg == 'jim',
+            (success) => success ? responseBody : {},
+          ))
+        .toServer(8083);
+
+    final response = await delete(
+        Uri.parse(
+            'http://${server.address.host}:${server.port}/updateuser/jim'),
+        body: User(login: 'jim', id: "123").toJson());
+
+    expect(response.statusCode, 200);
+    expect(response.body, jsonEncode(responseBody));
+
+    await server.close(force: true);
+  });
+
+  test('HEAD - In Process', () async {
+    final Map<String, dynamic> responseBody = {'message': 'success'};
+
+    final server = await (Router()
+          ..addHead(
+            '/head/<login>',
+          ))
+        .toServer(8083);
+
+    final response = await head(
+      Uri.parse('http://${server.address.host}:${server.port}/head/21'),
+    );
+
+    expect(response.statusCode, 200);
+    expect(response.body, '');
+
+    await server.close(force: true);
+  });
 }

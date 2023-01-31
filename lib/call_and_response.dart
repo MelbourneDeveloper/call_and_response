@@ -50,10 +50,32 @@ extension RouterExtensions on Router {
                 toJson,
               ));
 
-  Future<Response> _handle<T>(
-    Request request,
-    T body,
+  void addDelete<T>(
+    String route,
+    Future<T> Function(Request request, dynamic args) body,
     Map<String, dynamic> Function(T) toJson,
-  ) async =>
-      Response.ok(jsonEncode(toJson(body)));
+  ) =>
+      delete(
+          route,
+          (request, args) async => await _handle<T>(
+                request,
+                await body(request, args),
+                toJson,
+              ));
+
+  void addHead<T>(
+    String route,
+  ) =>
+      head(
+          route,
+          (request, args) async => await _handle<T>(
+                request,
+              ));
+
+  Future<Response> _handle<T>(
+    Request request, [
+    T? body,
+    Map<String, dynamic> Function(T)? toJson,
+  ]) async =>
+      Response.ok(body != null ? jsonEncode(toJson!(body)) : null);
 }
