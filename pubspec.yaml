@@ -12,6 +12,7 @@ dependencies:
   shelf_router: ^1.0.0
 
 dev_dependencies:
+  austerity: ^0.0.10-beta
   build_runner: ^2.3.3
   http: ^0.13.0
   lints: ^2.0.0

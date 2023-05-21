@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:call_and_response/call_and_response.dart';
 import 'package:shelf_router/shelf_router.dart';
 
-import 'package:call_and_response/call_and_response.dart';
 import 'user.dart';
 
 void main(List<String> args) async {
@@ -14,5 +14,6 @@ void main(List<String> args) async {
         ))
       .toServer(int.parse(Platform.environment['PORT']!));
 
+  // ignore: avoid_print
   print('Server listening on port ${server.port}');
 }
